@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -60,6 +61,9 @@ mustache/beard
 
 */
 
+enum HairColor {
+  Black, Grey, Brown
+}
 
 @customElement('my-options')
 export class myOptions extends LitElement {
@@ -78,29 +82,27 @@ export class myOptions extends LitElement {
   @property()
   name = 'World';
   colorName = 'null'
+  // https://google.github.io/styleguide/tsguide.html consider using lowercase 'h'
   HairColor = new Map([
     ['Black', '#000000'],
     ['Grey', '#808080'],
     ['Brown', '#964B00']
   ]);
 
-
+  //Consider using something like this to prevent any chance of errors occuring when the program gets more complex because of a typo when namaing a color
+  hairColorViaEnum = new Map([
+    [HairColor.Black, '#000000'],
+    [HairColor.Grey, '#808080'],
+    [HairColor.Brown, '#964B00']
+  ]);
 
 
   override render() {
     return html `
-
-  <div> HairColor</div>
-      <h1>${this._MakeChangeButtons(this.HairColor)}</h1>
-     
-
-      
+    <div> HairColor</div>
+        <h1>${this._MakeChangeButtons(this.HairColor)}</h1>
     `;
-
-
   }
-
-  
   
   /**
    * Formats a greeting sample code
@@ -112,27 +114,22 @@ export class myOptions extends LitElement {
 
 /*
 Questions
-Im not sure what to declare(?) -See above actually not very sure what that : means
+Im not sure what to declare(?) -See above actually not very sure what that : means  <--- everything after the : is the Type or the Type to be returned
 1. _MakeChangeButtons(hairColors: Map<string, string>) : Map<string, string>{ Does not work
 2. @click does not work when I do not declare the thing above
   */
   _MakeChangeButtons(hairColors: Map<string, string>) {
-  
-    for (let color of hairColors)
-    {
-     
-      return html`  
-      <button @click="${this._ChangeHairColor(color[0])}">
-         ${color[0]}
-      </button>
-      
-     
-    
+    let toReturn = [];
 
-    `;
+    for (let color of hairColors.keys()) {
+      toReturn.push(html`  
+      <button @click="${() => this._ChangeHairColor(color)}">
+         ${color}
+      </button>`);
+    }
+
+    return toReturn;
   }
-  return
-}
   
   /**
    * Formats a greeting
@@ -149,10 +146,7 @@ Im not sure what to declare(?) -See above actually not very sure what that : mea
     return `
    
       `;
-
-
   }
-
 
 }
 

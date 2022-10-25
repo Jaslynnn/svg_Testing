@@ -1,3 +1,4 @@
+/* eslint-disable prefer-const */
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -11,7 +12,34 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-/*Changes the color of the guys
+/*Summary of the Code
+
+Basic idea of the fill color thing for the separated file/ whatever Im trying to do above
+Questions on line 113
+
+- Make an array for each item and its colors
+HairColor = new Map([
+    ['Black', '#000000'],
+    ['Grey', '#808080'],
+    ['Brown', '#964B00']
+
+EyeColor = new Map([
+    ['Black', '#000000'],
+    ['Grey', '#808080'],
+    ['Brown', '#964B00']
+...
+
+When the code runs,
+1  function _MakeChangeButtons creates the buttons based on the colorNames(key eg black)
+2  function _ChangeHairColor is activated when buttons get clicked, it gets the colorName from the function and
+- pulls out the hex code from the hair color map(value eg #000000)(Not done)
+- selects the SVG classes to be changed(Not done)
+- changes the SVG classes properties to the hex code provided(Not done)
+
+
+What things to be changed:
+
+Changes the color of the
 hair/eyebrow,
 eyes,
 mustache/beard,
@@ -35,65 +63,60 @@ hair
 mustache/beard
 
 
-
-
 */
-/**
- * An example element.
- *
- * @fires count-changed - Indicates when the count changes
- * @slot - This element has a slot
- * @csspart button - The button
- */
+var HairColor;
+(function (HairColor) {
+    HairColor[HairColor["Black"] = 0] = "Black";
+    HairColor[HairColor["Grey"] = 1] = "Grey";
+    HairColor[HairColor["Brown"] = 2] = "Brown";
+})(HairColor || (HairColor = {}));
 let myOptions = class myOptions extends LitElement {
     constructor() {
         super(...arguments);
-        /**
-         * The name to say "Hello" to.
-         */
+        //properties with the map of color and hex codes
         this.name = 'World';
         this.colorName = 'null';
+        // https://google.github.io/styleguide/tsguide.html consider using lowercase 'h'
         this.HairColor = new Map([
             ['Black', '#000000'],
             ['Grey', '#808080'],
             ['Brown', '#964B00']
         ]);
-        /**
-         * The number of times the button has been clicked.
-         */
-        this.count = 0;
-        this.purple = "#9F2B68";
+        //Consider using something like this to prevent any chance of errors occuring when the program gets more complex because of a typo when namaing a color
+        this.hairColorViaEnum = new Map([
+            [HairColor.Black, '#000000'],
+            [HairColor.Grey, '#808080'],
+            [HairColor.Brown, '#964B00']
+        ]);
     }
     render() {
         return html `
-
-  <div> HairColor</div>
-      <h1>${this._MakeChangeButtons(this.HairColor)}</h1>
-      <!--<button @click=${this._onClick} part="button">
-        Click Count: ${this.count}
-      </button>-->
-     
-
-      
+    <div> HairColor</div>
+        <h1>${this._MakeChangeButtons(this.HairColor)}</h1>
     `;
     }
-    _onClick() {
-        this.count++;
-        this.dispatchEvent(new CustomEvent('count-changed'));
+    /**
+     * Formats a greeting sample code
+     * @param name The name to say "Hello" to
+     */
+    sayHello(name) {
+        return `Hello, ${name}`;
     }
+    /*
+    Questions
+    Im not sure what to declare(?) -See above actually not very sure what that : means  <--- everything after the : is the Type or the Type to be returned
+    1. _MakeChangeButtons(hairColors: Map<string, string>) : Map<string, string>{ Does not work
+    2. @click does not work when I do not declare the thing above
+      */
     _MakeChangeButtons(hairColors) {
-        for (let color of hairColors) {
-            return html `  
-      <button @click="${this._ChangeHairColor(color[0])}">
-         ${color[0]}
-      </button>
-      
-     
-    
-
-    `;
+        let toReturn = [];
+        for (let color of hairColors.keys()) {
+            toReturn.push(html `  
+      <button @click="${() => this._ChangeHairColor(color)}">
+         ${color}
+      </button>`);
         }
-        return;
+        return toReturn;
     }
     /**
      * Formats a greeting
@@ -102,18 +125,13 @@ let myOptions = class myOptions extends LitElement {
      */
     _ChangeHairColor(colorName) {
         console.log(colorName);
+        /*- pulls out the hex code from the hair color map(value eg #000000)(Not done)
+    - selects the SVG classes to be changed(Not done)
+    - changes the SVG classes properties to the hex code provided(Not done)
+        */
         return `
    
-    
-  
       `;
-    }
-    /**
-     * Formats a greeting
-     * @param name The name to say "Hello" to
-     */
-    sayHello(name) {
-        return `Hello, ${name}`;
     }
 };
 myOptions.styles = css `
@@ -129,11 +147,6 @@ myOptions.styles = css `
 __decorate([
     property()
 ], myOptions.prototype, "name", void 0);
-__decorate([
-    property({
-        type: Number
-    })
-], myOptions.prototype, "count", void 0);
 myOptions = __decorate([
     customElement('my-options')
 ], myOptions);
