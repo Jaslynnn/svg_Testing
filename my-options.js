@@ -12,7 +12,8 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
-import { changeHairColor } from './my-element';
+import { HairColor } from './hair-color';
+import { hairColorViaEnum } from './hair-color-via-enum';
 /*Summary of the Code
 
 Basic idea of the fill color thing for the separated file/ whatever Im trying to do above
@@ -65,29 +66,16 @@ mustache/beard
 
 
 */
-export var HairColor;
-(function (HairColor) {
-    HairColor[HairColor["Black"] = 0] = "Black";
-    HairColor[HairColor["Grey"] = 1] = "Grey";
-    HairColor[HairColor["Brown"] = 2] = "Brown";
-})(HairColor || (HairColor = {}));
-let myOptions = class myOptions extends LitElement {
+let MyOptions = class MyOptions extends LitElement {
     constructor() {
         super(...arguments);
         //properties with the map of color and hex codes
-        this.name = 'World';
         this.colorName = 'null';
-        //Consider using something like this to prevent any chance of errors occuring when the program gets more complex because of a typo when naming a color
-        this.hairColorViaEnum = new Map([
-            [HairColor.Black, '#000000'],
-            [HairColor.Grey, '#808080'],
-            [HairColor.Brown, '#964B00']
-        ]);
     }
     render() {
         return html `
     <div> HairColor</div>
-        <h1>${this._MakeChangeButtons(this.hairColorViaEnum)}</h1>
+        <h1>${this._makeChangeButtons()}</h1>
     `;
     }
     /**
@@ -97,24 +85,26 @@ let myOptions = class myOptions extends LitElement {
     sayHello(name) {
         return `Hello, ${name}`;
     }
-    /*
-    Questions
-    Im not sure what to declare(?) -See above actually not very sure what that : means  <--- everything after the : is the Type or the Type to be returned
-    1. _MakeChangeButtons(hairColors: Map<string, string>) : Map<string, string>{ Does not work
-    2. @click does not work when I do not declare the thing above
-      */
-    _MakeChangeButtons(hairColors) {
+    _onHairColorButtonClicked(color) {
+        window.console.log("dispatiching", hairColorViaEnum.get(color));
+        document.dispatchEvent(new CustomEvent("HAIR_COLOR_SELECTED", {
+            detail: {
+                color: hairColorViaEnum.get(color)
+            }
+        }));
+    }
+    _makeChangeButtons() {
         let toReturn = [];
-        for (let color of hairColors.keys()) {
+        for (let color of hairColorViaEnum.keys()) {
             toReturn.push(html `  
-      <button @click="${() => changeHairColor(color, hairColors)}">
+      <button @click="${() => this._onHairColorButtonClicked(color)}">
          ${HairColor[color]}
       </button>`);
         }
         return toReturn;
     }
 };
-myOptions.styles = css `
+MyOptions.styles = css `
   :host {
       display: block;
       border: solid 1px gray;
@@ -126,9 +116,9 @@ myOptions.styles = css `
   `;
 __decorate([
     property()
-], myOptions.prototype, "name", void 0);
-myOptions = __decorate([
+], MyOptions.prototype, "colorName", void 0);
+MyOptions = __decorate([
     customElement('my-options')
-], myOptions);
-export { myOptions };
+], MyOptions);
+export { MyOptions };
 //# sourceMappingURL=my-options.js.map

@@ -7,7 +7,8 @@
 
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import { changeHairColor } from './my-element'
+import { HairColor } from './hair-color';
+import { hairColorViaEnum } from './hair-color-via-enum';
 
 /*Summary of the Code
 
@@ -62,10 +63,6 @@ mustache/beard
 
 */
 
- export enum HairColor {
-  Black, Grey, Brown
-}
-
 @customElement('my-options')
 export class MyOptions extends LitElement {
   static override styles = css`
@@ -83,19 +80,10 @@ export class MyOptions extends LitElement {
   @property()
   colorName = 'null'
 
-
-  //Consider using something like this to prevent any chance of errors occuring when the program gets more complex because of a typo when naming a color
- hairColorViaEnum = new Map([
-    [HairColor.Black, '#000000'],
-    [HairColor.Grey, '#808080'],
-    [HairColor.Brown, '#964B00']
-  ]);
-
-
   override render() {
     return html `
     <div> HairColor</div>
-        <h1>${this._makeChangeButtons(this.hairColorViaEnum)}</h1>
+        <h1>${this._makeChangeButtons()}</h1>
     `;
   }
   
@@ -107,25 +95,27 @@ export class MyOptions extends LitElement {
     return `Hello, ${name}`;
   }
 
+  _onHairColorButtonClicked(color: HairColor) {
+    window.console.log("dispatiching", hairColorViaEnum.get(color));
+    document.dispatchEvent(new CustomEvent("HAIR_COLOR_SELECTED", {
+      detail: {
+        color: hairColorViaEnum.get(color)
+      }
+    }));
+  }
 
-  _makeChangeButtons(hairColors: Map<number, string>) {
+  _makeChangeButtons() {
     let toReturn = [];
 
-    for (let color of hairColors.keys()) {
+    for (let color of hairColorViaEnum.keys()) {
       toReturn.push(html`  
-      <button @click="${() => changeHairColor(color,hairColors)}">
+      <button @click="${() => this._onHairColorButtonClicked(color)}">
          ${HairColor[color]}
       </button>`);
     }
 
     return toReturn;
-  }
-  
-
-  
-
-  
-  
+  }  
 }
 
 declare global {

@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
+/* eslint-disable prefer-const */
 /**
  * @license
  * Copyright 2019 Google LLC
@@ -6,9 +8,8 @@
 
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
-import {HairColor} from './my-options';
-
-
+import { HairColor } from './hair-color';
+import { hairColorViaEnum } from './hair-color-via-enum';
 
 /*Changes the color of the guys 
 hair/eyebrow, 
@@ -32,10 +33,6 @@ green, orange, pink, purple, red, white, yellow
 remove
 hair
 mustache/beard
-
-
-
-
 */
 
 /**
@@ -58,8 +55,6 @@ export class MyElement extends LitElement {
     .guy{
       width: 30vw;
     }
-
-
   `;
 
   /**
@@ -68,6 +63,9 @@ export class MyElement extends LitElement {
   @property()
   name = 'World';
 
+  @property({type: String})
+  hairFillColor = hairColorViaEnum.get(HairColor.Black);
+
   /**
    * The number of times the button has been clicked.
    */
@@ -75,12 +73,33 @@ export class MyElement extends LitElement {
   count = 0;
   purple = "#9F2B68"
 
- //Consider using something like this to prevent any chance of errors occuring when the program gets more complex because of a typo when naming a color
-  hairColorViaEnum = new Map([
-    [HairColor.Black, '#000000'],
-    [HairColor.Grey, '#808080'],
-    [HairColor.Brown, '#964B00']
-  ]);
+    /*
+    Questions
+    1. my array isnt getting the getElementsByClassName items as I thought it would. 
+      I was wondering if its because of the sequence of the function(eg: the function is written before the SVG so it is unable to read the classes in the SVG) so I tried to move it around but it just does not seem to work,
+      does it have something to do with how the class is rendered in the html of the web component <my-element>and not the index.html document document? 
+
+    2. Does it need to be on the same script as the svg or any other script is possible?
+
+    Ravi: it's because you're looking within document, whereas the classes you're looking for are hidden under a shadow dom. Instead of doing document.getElementsByClassName you would want something like this.shadowRoot.querySelector. But, taking a step back from all that, the reason all of this is hidden under a shadow dom is because directly manipulating class elements is an old way of doing things and is now discouraged. Instead, you'll want to use property variables, set the fill colors within the templates to those variables, then just manipulate the variables. See the level selector in the main app as an example of this.
+
+    3. When do I export functions?
+
+    part of the complication  was that this function was being defined outside of MyElement. I moved it inside MyElement so it had access to all its variables. After that, export is not necessary.
+  */ 
+  _onHairColorSelected = (e: any) => {
+    this.hairFillColor = e.detail.color;
+  }
+
+  override connectedCallback() {
+    super.connectedCallback()
+    document.addEventListener('HAIR_COLOR_SELECTED', this._onHairColorSelected);
+  }
+
+  override disconnectedCallback() {
+    super.disconnectedCallback()
+    document.removeEventListener('HAIR_COLOR_SELECTED', this._onHairColorSelected);
+  }
 
   override render() {
     return html`
@@ -225,7 +244,7 @@ export class MyElement extends LitElement {
   </g>
   <g class="hairs">
     <path class="hairshadow" d="M334.4,186.65c-14.53,7.28-74.77,168.05-69.52,175.25,3.21,4.4-23.31-90.33-19.98-127.79,3.33-37.46,24.02-59.79,77.3-102.25,53.28-42.46,133.46-31.14,210.63-42.46,97.68-14.33,137.86,262.62,73.39,421.53-.59,1.45,16.54-106.5-12.07-130.29-5.5-4.57-47.08,2.02-49.95-2.5-3.14-4.94,51.19-12.97,46.62-15.4-24.83-13.19-73.4,14.2-99.49-6.24-5.93-4.65-.67-14.54,1.67-20.81,6.67-17.89,80.88-48.44,83.67-52.03,33.18-42.81-195.79-120.28-242.27-96.99Z" fill="#eba59c" opacity=".5"/>
-    <path class="hair" data-name="hair" d="M268.63,357.6c-.18,1.08,20.95-141.68,50.22-165.12,42.05-33.68,149.55-17.9,151.66-18.45,2.78-.73,109.62,1.77,131.69,17.62,36.25,26.03,33.81,163.83,36.49,165.12,3.6,2.28,21.04-68.35,24.56-91.02,3.37-21.71,19.12-159.07-26.64-208.13C605.03,23.75,552.01,7.31,465.66,.72c-66.47-5.07-103.62,18.14-130.43,21.92-40.6,5.73-65.63,36.06-77.43,64.1-27.97,66.51-25.07,150.78-16.66,177.88,7.6,24.5,18.6,95.27,27.48,92.97Z" fill="#3e1332"/>
+    <path class="hair" data-name="hair" d="M268.63,357.6c-.18,1.08,20.95-141.68,50.22-165.12,42.05-33.68,149.55-17.9,151.66-18.45,2.78-.73,109.62,1.77,131.69,17.62,36.25,26.03,33.81,163.83,36.49,165.12,3.6,2.28,21.04-68.35,24.56-91.02,3.37-21.71,19.12-159.07-26.64-208.13C605.03,23.75,552.01,7.31,465.66,.72c-66.47-5.07-103.62,18.14-130.43,21.92-40.6,5.73-65.63,36.06-77.43,64.1-27.97,66.51-25.07,150.78-16.66,177.88,7.6,24.5,18.6,95.27,27.48,92.97Z" fill="${this.hairFillColor}"/>
   </g>
   <g class="eyes">
     <g class="rightEye">
@@ -263,16 +282,9 @@ export class MyElement extends LitElement {
         Click Count: ${this.count}
       </button>
       <slot></slot>
-      -->
-
-${this.changingHairColor("#000000")}
-      
+      -->      
     `;
-
-
   }
-
-
 
   private _onClick() {
     this.count++;
@@ -286,62 +298,8 @@ ${this.changingHairColor("#000000")}
   sayHello(name: string): string {
     return `Hello, ${name}`;
   }
-
-//Testing if where the function is affects the SVG elements gotten by the code, apparently no still 0
-  changingHairColor(hexCode: string){
-    const hairs = Array.from (document.getElementsByClassName('hair') as HTMLCollectionOf<SVGElement>
-    );
-    console.log(hairs)
-   
-    hairs.forEach(hair => {
-      hair.style.fill = hexCode;
-      
-    });
-  
-   
 }
-}
-/*
-Questions
-1. my array isnt getting the getElementsByClassName items as I thought it would. 
-  I was wondering if its because of the sequence of the function(eg: the function is written before the SVG so it is unable to read the classes in the SVG) so I tried to move it around but it just does not seem to work,
-  does it have something to do with how the class is rendered in the html of the web component <my-element>and not the index.html document document? 
 
-2. Does it need to be on the same script as the svg or any other script is possible?
-
-3. When do I export functions?
-
-
-
-
-
-*/ 
-export function changeHairColor(colorName: number, hairColorsList: Map<number, string>) {
-  console.log(colorName)
-  let hexCode : string = hairColorsList.get(colorName) as string;
-  console.log(hexCode);
-
-  const hairs = Array.from (document.getElementsByClassName('hair') as HTMLCollectionOf<SVGElement>
-  );
-  console.log(hairs)
- 
-  hairs.forEach(hair => {
-    hair.style.fill = hexCode;
-    
-  });
-
-  
-  
-
-
-  /*- pulls out the hex code from the hair color map(value eg #000000)(done)
-- selects the SVG classes to be changed(Not done)
-- changes the SVG classes properties to the hex code provided(Not done)
-  */
-  return `
- 
-    `;
-}
 declare global {
   interface HTMLElementTagNameMap {
     'my-element': MyElement;

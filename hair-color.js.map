@@ -1,0 +1,1 @@
+{"version":3,"file":"hair-color.js","sourceRoot":"","sources":["src/hair-color.ts"],"names":[],"mappings":"AAAA,MAAM,CAAN,IAAY,SAEX;AAFD,WAAY,SAAS;IACjB,2CAAK,CAAA;IAAE,yCAAI,CAAA;IAAE,2CAAK,CAAA;AACtB,CAAC,EAFW,SAAS,KAAT,SAAS,QAEpB","sourcesContent":["export enum HairColor {\r\n    Black, Grey, Brown\r\n}"]}
