@@ -12,6 +12,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
 };
 import { LitElement, html, css } from 'lit';
 import { customElement, property } from 'lit/decorators.js';
+import { changeHairColor } from './my-element';
 /*Summary of the Code
 
 Basic idea of the fill color thing for the separated file/ whatever Im trying to do above
@@ -64,7 +65,7 @@ mustache/beard
 
 
 */
-var HairColor;
+export var HairColor;
 (function (HairColor) {
     HairColor[HairColor["Black"] = 0] = "Black";
     HairColor[HairColor["Grey"] = 1] = "Grey";
@@ -76,13 +77,7 @@ let myOptions = class myOptions extends LitElement {
         //properties with the map of color and hex codes
         this.name = 'World';
         this.colorName = 'null';
-        // https://google.github.io/styleguide/tsguide.html consider using lowercase 'h'
-        this.HairColor = new Map([
-            ['Black', '#000000'],
-            ['Grey', '#808080'],
-            ['Brown', '#964B00']
-        ]);
-        //Consider using something like this to prevent any chance of errors occuring when the program gets more complex because of a typo when namaing a color
+        //Consider using something like this to prevent any chance of errors occuring when the program gets more complex because of a typo when naming a color
         this.hairColorViaEnum = new Map([
             [HairColor.Black, '#000000'],
             [HairColor.Grey, '#808080'],
@@ -92,7 +87,7 @@ let myOptions = class myOptions extends LitElement {
     render() {
         return html `
     <div> HairColor</div>
-        <h1>${this._MakeChangeButtons(this.HairColor)}</h1>
+        <h1>${this._MakeChangeButtons(this.hairColorViaEnum)}</h1>
     `;
     }
     /**
@@ -112,26 +107,11 @@ let myOptions = class myOptions extends LitElement {
         let toReturn = [];
         for (let color of hairColors.keys()) {
             toReturn.push(html `  
-      <button @click="${() => this._ChangeHairColor(color)}">
-         ${color}
+      <button @click="${() => changeHairColor(color, hairColors)}">
+         ${HairColor[color]}
       </button>`);
         }
         return toReturn;
-    }
-    /**
-     * Formats a greeting
-     * @param colorName The name of the color
-     * @param colorhex The hex of the color
-     */
-    _ChangeHairColor(colorName) {
-        console.log(colorName);
-        /*- pulls out the hex code from the hair color map(value eg #000000)(Not done)
-    - selects the SVG classes to be changed(Not done)
-    - changes the SVG classes properties to the hex code provided(Not done)
-        */
-        return `
-   
-      `;
     }
 };
 myOptions.styles = css `

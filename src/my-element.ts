@@ -6,6 +6,9 @@
 
 import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
+import {HairColor} from './my-options';
+
+
 
 /*Changes the color of the guys 
 hair/eyebrow, 
@@ -71,6 +74,13 @@ export class MyElement extends LitElement {
   @property({type: Number})
   count = 0;
   purple = "#9F2B68"
+
+ //Consider using something like this to prevent any chance of errors occuring when the program gets more complex because of a typo when naming a color
+  hairColorViaEnum = new Map([
+    [HairColor.Black, '#000000'],
+    [HairColor.Grey, '#808080'],
+    [HairColor.Brown, '#964B00']
+  ]);
 
   override render() {
     return html`
@@ -255,10 +265,14 @@ export class MyElement extends LitElement {
       <slot></slot>
       -->
 
-
+${this.changingHairColor("#000000")}
       
     `;
+
+
   }
+
+
 
   private _onClick() {
     this.count++;
@@ -272,8 +286,62 @@ export class MyElement extends LitElement {
   sayHello(name: string): string {
     return `Hello, ${name}`;
   }
-}
 
+//Testing if where the function is affects the SVG elements gotten by the code, apparently no still 0
+  changingHairColor(hexCode: string){
+    const hairs = Array.from (document.getElementsByClassName('hair') as HTMLCollectionOf<SVGElement>
+    );
+    console.log(hairs)
+   
+    hairs.forEach(hair => {
+      hair.style.fill = hexCode;
+      
+    });
+  
+   
+}
+}
+/*
+Questions
+1. my array isnt getting the getElementsByClassName items as I thought it would. 
+  I was wondering if its because of the sequence of the function(eg: the function is written before the SVG so it is unable to read the classes in the SVG) so I tried to move it around but it just does not seem to work,
+  does it have something to do with how the class is rendered in the html of the web component <my-element>and not the index.html document document? 
+
+2. Does it need to be on the same script as the svg or any other script is possible?
+
+3. When do I export functions?
+
+
+
+
+
+*/ 
+export function changeHairColor(colorName: number, hairColorsList: Map<number, string>) {
+  console.log(colorName)
+  let hexCode : string = hairColorsList.get(colorName) as string;
+  console.log(hexCode);
+
+  const hairs = Array.from (document.getElementsByClassName('hair') as HTMLCollectionOf<SVGElement>
+  );
+  console.log(hairs)
+ 
+  hairs.forEach(hair => {
+    hair.style.fill = hexCode;
+    
+  });
+
+  
+  
+
+
+  /*- pulls out the hex code from the hair color map(value eg #000000)(done)
+- selects the SVG classes to be changed(Not done)
+- changes the SVG classes properties to the hex code provided(Not done)
+  */
+  return `
+ 
+    `;
+}
 declare global {
   interface HTMLElementTagNameMap {
     'my-element': MyElement;
