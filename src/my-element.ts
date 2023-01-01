@@ -6,10 +6,11 @@
  * SPDX-License-Identifier: BSD-3-Clause
  */
 
-import {LitElement, html, css} from 'lit';
+import {LitElement, html, css, PropertyValues, PropertyDeclaration, svg} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import { HairColor } from './hair-color';
 import { hairColorViaEnum } from './hair-color-via-enum';
+
 
 /*Changes the color of the guys 
 hair/eyebrow, 
@@ -65,13 +66,12 @@ export class MyElement extends LitElement {
 
   @property({type: String})
   hairFillColor = hairColorViaEnum.get(HairColor.Black);
+  @property({type: Boolean})
+  beard = true;
+  @property({type: Boolean})
+  mustache = false;
 
-  /**
-   * The number of times the button has been clicked.
-   */
-  @property({type: Number})
-  count = 0;
-  purple = "#9F2B68"
+  
 
     /*
     Questions
@@ -87,18 +87,33 @@ export class MyElement extends LitElement {
 
     part of the complication  was that this function was being defined outside of MyElement. I moved it inside MyElement so it had access to all its variables. After that, export is not necessary.
   */ 
+
   _onHairColorSelected = (e: any) => {
     this.hairFillColor = e.detail.color;
+  }
+
+  _onItemRemoved = (e: any) => {
+    
+    let itemName : string = e.detail.item ;
+    //Gives me eg: beard 
+    //I want to access the beard property so I can change it. Is it possible to convert a string into a property name?
+    (this as any )[itemName] = false;
+    console.log(itemName)
+    
+    //Put properties in a map key is the enums and the values are the properties
+    
   }
 
   override connectedCallback() {
     super.connectedCallback()
     document.addEventListener('HAIR_COLOR_SELECTED', this._onHairColorSelected);
+    document.addEventListener('ITEM_REMOVED', this._onItemRemoved);
   }
 
   override disconnectedCallback() {
     super.disconnectedCallback()
     document.removeEventListener('HAIR_COLOR_SELECTED', this._onHairColorSelected);
+    document.removeEventListener('ITEM_REMOVED', this._onItemRemoved);
   }
 
   override render() {
@@ -263,12 +278,12 @@ export class MyElement extends LitElement {
     </g>
   </g>
   <g class="eyebrows">
-    <path class="eyebrow" d="M484.74,294.72c.59-2.78,.97-6.76,3.51-8.16,4.69-2.58,17.93-4.86,38.46-7.08,15.35-1.67,28.24-.33,39.23,1.09,12.57,1.62,22.35,10.43,25.43,14.55,.45,.61-15.66-1.62-28.56-.54-3.19,.27-40.72,1.58-56.91,4.72-10.45,2.03-18.92,3.37-20.68,.18-.62-1.12-.74-3.49-.47-4.75Z" fill="#3e1332"/>
-    <path class="eyebrow" data-name="eyebrow" d="M418.64,294.75c-.59-2.78-.97-6.76-3.51-8.16-4.69-2.58-17.93-4.86-38.46-7.08-15.35-1.67-28.24-.33-39.23,1.09-12.57,1.62-22.35,10.43-25.43,14.55-.45,.61,15.66-1.62,28.56-.54,3.19,.27,40.72,1.58,56.91,4.72,10.45,2.03,18.92,3.37,20.68,.18,.62-1.12,.74-3.49,.47-4.75Z" fill="#3e1332"/>
+    <path class="eyebrow" d="M484.74,294.72c.59-2.78,.97-6.76,3.51-8.16,4.69-2.58,17.93-4.86,38.46-7.08,15.35-1.67,28.24-.33,39.23,1.09,12.57,1.62,22.35,10.43,25.43,14.55,.45,.61-15.66-1.62-28.56-.54-3.19,.27-40.72,1.58-56.91,4.72-10.45,2.03-18.92,3.37-20.68,.18-.62-1.12-.74-3.49-.47-4.75Z" fill="${this.hairFillColor}"/>
+    <path class="eyebrow" data-name="eyebrow" d="M418.64,294.75c-.59-2.78-.97-6.76-3.51-8.16-4.69-2.58-17.93-4.86-38.46-7.08-15.35-1.67-28.24-.33-39.23,1.09-12.57,1.62-22.35,10.43-25.43,14.55-.45,.61,15.66-1.62,28.56-.54,3.19,.27,40.72,1.58,56.91,4.72,10.45,2.03,18.92,3.37,20.68,.18,.62-1.12,.74-3.49,.47-4.75Z" fill="${this.hairFillColor}"/>
   </g>
   <g class="beardMustache">
-    <path class="beard" d="M628.34,423.18s-26.6,46.43-42.07,72.01c-20.55,33.99-33.31,42.39-37.83,50.76-22.62,41.88-73.06,57.74-93.75,57.7-20.99-.2-70.81-16.13-93.26-57.69-4.52-8.37-17.28-16.76-37.83-50.76-15.47-25.59-42.07-72.01-42.07-72.01-8.74,4.82,29.09,125.46,52.99,151.1,58.92,63.22,81.07,72.31,119.74,72.63,0,0,0,0,0,0,.07,0,.13,0,.2,0,.38,0,.77,0,1.15,0,0,0,0-.01,0-.02,38.67-.32,60.81-9.4,119.74-72.63,23.9-25.65,61.73-146.28,52.99-151.1Z" fill="#3e1332"/>
-    <path class="mustache" d="M532.2,470.35c-11.23-9.44-17.37-10.42-32.23-13.92-11.96-2.81-35.8,.46-46.08,1.27-10.28-.81-34.12-4.09-46.08-1.27-14.86,3.49-21,4.47-32.23,13.92-4.3,3.62-13.56,23.22-11.93,25.25,1.95,2.45,19.34-14.58,28.8-17.76,18.12-6.1,45.94-8.05,61.44-7.88,15.51-.17,43.32,1.78,61.44,7.88,9.46,3.18,26.85,20.21,28.8,17.76,1.62-2.04-7.63-21.63-11.93-25.25Z" fill="#3e1332"/>
+    ${this.beard  === false ? '' : svg` <path class="beard" d="M628.34,423.18s-26.6,46.43-42.07,72.01c-20.55,33.99-33.31,42.39-37.83,50.76-22.62,41.88-73.06,57.74-93.75,57.7-20.99-.2-70.81-16.13-93.26-57.69-4.52-8.37-17.28-16.76-37.83-50.76-15.47-25.59-42.07-72.01-42.07-72.01-8.74,4.82,29.09,125.46,52.99,151.1,58.92,63.22,81.07,72.31,119.74,72.63,0,0,0,0,0,0,.07,0,.13,0,.2,0,.38,0,.77,0,1.15,0,0,0,0-.01,0-.02,38.67-.32,60.81-9.4,119.74-72.63,23.9-25.65,61.73-146.28,52.99-151.1Z" fill="${this.hairFillColor}" />`}
+    <path class="mustache" d="M532.2,470.35c-11.23-9.44-17.37-10.42-32.23-13.92-11.96-2.81-35.8,.46-46.08,1.27-10.28-.81-34.12-4.09-46.08-1.27-14.86,3.49-21,4.47-32.23,13.92-4.3,3.62-13.56,23.22-11.93,25.25,1.95,2.45,19.34-14.58,28.8-17.76,18.12-6.1,45.94-8.05,61.44-7.88,15.51-.17,43.32,1.78,61.44,7.88,9.46,3.18,26.85,20.21,28.8,17.76,1.62-2.04-7.63-21.63-11.93-25.25Z" fill="${this.hairFillColor}" display= "${this.mustache }"/>
   </g>
 </svg>
 
@@ -276,28 +291,16 @@ export class MyElement extends LitElement {
 
 
 
-    <div> This is the guy that can be customised</div>
-     <!-- <h1>${this.sayHello(this.name)}!</h1>
-      <button @click=${this._onClick} part="button">
-        Click Count: ${this.count}
-      </button>
-      <slot></slot>
-      -->      
+    
+     
+    
     `;
   }
 
-  private _onClick() {
-    this.count++;
-    this.dispatchEvent(new CustomEvent('count-changed'));
-  }
+  
 
-  /**
-   * Formats a greeting
-   * @param name The name to say "Hello" to
-   */
-  sayHello(name: string): string {
-    return `Hello, ${name}`;
-  }
+ 
+ 
 }
 
 declare global {

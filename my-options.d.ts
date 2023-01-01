@@ -16,6 +16,8 @@ export declare class MyOptions extends LitElement {
     sayHello(name: string): string;
     _onHairColorButtonClicked(color: HairColor): void;
     _makeChangeButtons(): import("lit-html").TemplateResult<1>[];
+    _makeRemoveButtons(): import("lit-html").TemplateResult<1>[];
+    _onRemoveButtonClicked(itemName: string): void;
 }
 declare global {
     interface HTMLElementTagNameMap {

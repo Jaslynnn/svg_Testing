@@ -9,6 +9,7 @@ import {LitElement, html, css} from 'lit';
 import {customElement, property} from 'lit/decorators.js';
 import { HairColor } from './hair-color';
 import { hairColorViaEnum } from './hair-color-via-enum';
+import { RemoveList } from './remove-list';
 
 /*Summary of the Code
 
@@ -82,8 +83,15 @@ export class MyOptions extends LitElement {
 
   override render() {
     return html `
-    <div> HairColor</div>
+    <div> HairColor
         <h1>${this._makeChangeButtons()}</h1>
+        </div>
+        
+
+        <div> Remove Buttons
+        <h1>${this._makeRemoveButtons()}</h1>
+        </div>
+        
     `;
   }
   
@@ -95,8 +103,10 @@ export class MyOptions extends LitElement {
     return `Hello, ${name}`;
   }
 
+//Get enum here
   _onHairColorButtonClicked(color: HairColor) {
-    window.console.log("dispatiching", hairColorViaEnum.get(color));
+    //Get the value of the key(hair color enum)
+    window.console.log("dispatching", hairColorViaEnum.get(color));
     document.dispatchEvent(new CustomEvent("HAIR_COLOR_SELECTED", {
       detail: {
         color: hairColorViaEnum.get(color)
@@ -106,8 +116,9 @@ export class MyOptions extends LitElement {
 
   _makeChangeButtons() {
     let toReturn = [];
-
+    
     for (let color of hairColorViaEnum.keys()) {
+      console.log()
       toReturn.push(html`  
       <button @click="${() => this._onHairColorButtonClicked(color)}">
          ${HairColor[color]}
@@ -116,6 +127,43 @@ export class MyOptions extends LitElement {
 
     return toReturn;
   }  
+  // Whats the difference between for i of and for i in
+
+
+  //Makes Remove buttons
+  _makeRemoveButtons() {
+    let itemtoReturn = [];
+    for (let item of Object.values(RemoveList)) {
+      var RemoveListNames = Number(item)>=0
+      if(RemoveListNames){
+        console.log(RemoveList[Number(item)])
+
+        itemtoReturn.push(html`  
+        <button @click="${() => this._onRemoveButtonClicked(RemoveList[Number(item)].toLowerCase())}">
+           ${RemoveList[Number(item)].toLowerCase()}
+        </button>`);
+      }
+     
+    
+    }
+
+    return itemtoReturn;
+  }  
+  
+
+  _onRemoveButtonClicked(itemName: string) {
+    //Make a property of the 
+    window.console.log("dispatching", itemName);
+    document.dispatchEvent(new CustomEvent("ITEM_REMOVED", {
+      detail: {
+        item: itemName
+      }
+    }));
+    
+  }
+  
+  
+
 }
 
 declare global {
